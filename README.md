@@ -34,10 +34,10 @@
 Claude Code / Codex のスキルディレクトリ（例: `$HOME/.claude/skills/`）に、`skills/` 配下の各フォルダを置く。
 
 ```bash
-git clone https://github.com/BRANCO-Inc/mkt-lp-write.git
-cp -R mkt-lp-write/skills/lp-transcribe  "$HOME/.claude/skills/"
-cp -R mkt-lp-write/skills/pdf-transcribe "$HOME/.claude/skills/"
-cp -R mkt-lp-write/skills/lp-write       "$HOME/.claude/skills/"
+git clone https://github.com/BRANCO-Inc/lp-creation-kit.git
+cp -R lp-creation-kit/skills/lp-transcribe  "$HOME/.claude/skills/"
+cp -R lp-creation-kit/skills/pdf-transcribe "$HOME/.claude/skills/"
+cp -R lp-creation-kit/skills/lp-write       "$HOME/.claude/skills/"
 ```
 
 必要なものだけ入れてもよい（例: 文字起こしだけ使う、書く部分だけ使う）。各スキルは独立して動く。
