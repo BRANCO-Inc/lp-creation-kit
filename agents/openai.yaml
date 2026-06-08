@@ -1,7 +1,7 @@
 interface:
-  display_name: "LINE誘導LPライター"
-  short_description: "3段階ヒアリング→3型を並列生成→99点監査でLINE誘導LP本文を作成"
-  default_prompt: "Use $mkt-lp-write to hear target/concept/details and generate 3 LP drafts (offer-first, empathy, story) for a LINE webinar funnel."
+  display_name: "誘導LPライター"
+  short_description: "3段階ヒアリング→3型を並列生成→99点監査で誘導LP本文を作成"
+  default_prompt: "Use $mkt-lp-write to hear target/concept/details and generate 3 LP drafts (型1 offer-led, 型2 mirror-led, 型3 proof-led) for a 誘導LP that drives registration, booking, or sign-up."
 
 policy:
   allow_implicit_invocation: true
