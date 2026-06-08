@@ -1,0 +1,11 @@
+{
+  "name": "lp-transcribe",
+  "version": "1.0.0",
+  "description": "Capture a landing page and split it into section images for transcription",
+  "scripts": {
+    "setup": "npm install && npx playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}

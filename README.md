@@ -1,47 +1,77 @@
-# mkt-lp-write
+# LP制作キット
 
-無料オファー・体験・予約・診断・登録などへ誘導するLPの本文Markdownを作るSkill。
+誘導LP（無料オファー・体験・予約・診断・登録などへ誘導するLP）を作るための、Claude Code / Codex 向けスキル集。
 
-Claude Code / Codex の両runtimeでSkillとして動く。ユーザー入力・添付ファイル・このSkill内の `references/` だけで完結する。
+競合や参考のLP・資料を文字起こしして材料を集め、その材料から自分のLP本文を書くところまでを、3つのスキルでカバーする。すべてローカルで完結し、外部の非公開データには依存しない。
 
-## 何をするか
+## 収録スキル
 
-1. 3段階ヒアリング — ターゲット / コンセプト / その他情報を、ユーザーへの質問と一次情報ファイルの2系統で集める
-2. 3型を並列生成 — 集めた材料から、性格の異なる3つの型を各1エージェントで同時に書く
-   - 型1 オファー先出し型（報酬を先に見せる / Offer-led）
-   - 型2 自己投影・反転型（読者自身を鏡に映す / Mirror-led）
-   - 型3 権威・実証先出し型（信頼を先に立てる / Proof-led）
-3. 99点まで自己監査 — 各原稿を99点ルーブリックで採点し、未達なら直してから出す
+| スキル | 役割 |
+|---|---|
+| `skills/lp-transcribe` | 競合・参考LPのURLを文字起こし（スクショ→セクション分割→Vision OCR） |
+| `skills/pdf-transcribe` | ウェビナースライド・資料PDFを文字起こし（ページ画像化→Vision OCR） |
+| `skills/lp-write` | 集めた材料から、性格の異なる3型のLP本文を書く（3型並列生成→99点自己監査） |
+
+文字起こし2スキルは、それぞれ **2形式**で保存する。
+
+- `<name>_transcript.md` — 文字起こしだけ（本文テキストのみ）
+- `<name>_structured.md` — 構造化md（セクション/スライド別に テキスト情報 と 視覚事実）
+
+## 想定ワークフロー
+
+```
+1. 競合LP・参考資料を集める
+      │  lp-transcribe（URL） / pdf-transcribe（PDF）
+      ▼
+2. 文字起こし（transcript ＋ structured の2形式）
+      │  構成・コピー・CTA設計を観察する材料にする
+      ▼
+3. lp-write で自分のLP本文を3型生成 → 99点監査 → 推奨1本
+```
+
+## インストール
+
+Claude Code / Codex のスキルディレクトリ（例: `$HOME/.claude/skills/`）に、`skills/` 配下の各フォルダを置く。
+
+```bash
+git clone https://github.com/BRANCO-Inc/mkt-lp-write.git
+cp -R mkt-lp-write/skills/lp-transcribe  "$HOME/.claude/skills/"
+cp -R mkt-lp-write/skills/pdf-transcribe "$HOME/.claude/skills/"
+cp -R mkt-lp-write/skills/lp-write       "$HOME/.claude/skills/"
+```
+
+必要なものだけ入れてもよい（例: 文字起こしだけ使う、書く部分だけ使う）。各スキルは独立して動く。
+
+### セットアップ
+
+- `lp-transcribe`: Playwright が必要。スキルフォルダ内で `npm install && npx playwright install chromium`。`split-images.py` 用に `pip install pillow`。
+- `pdf-transcribe`: `pip install pymupdf`。
+- `lp-write`: 追加依存なし。
 
 ## 使い方
 
-Claude Code:
+各スキルの `SKILL.md` に手順がある。Claude Code なら自然文で呼べる。
 
 ```
-/mkt-lp-write
+この競合LPを文字起こしして: https://example.com/lp
+このスライドPDFを文字起こしして: ./slides.pdf
+集めた材料でLPを書いて
 ```
 
-Codex:
+## 出力
+
+文字起こしは `./output/<name>/` に保存される。
 
 ```
-$mkt-lp-write でLP本文を作って
+./output/<name>/
+├── <name>_transcript.md   ← 文字起こしだけ
+├── <name>_structured.md   ← 構造化md
+└── images/                ← セクション/ページ画像
 ```
 
-起動後、3段階のヒアリングに答える（思いつくまま話してOK）。一次情報ファイルがあればパス/URLを渡す。3型のLP本文Markdownが返る。
+LP本文は Markdown で出力される（型1 オファー先出し / 型2 自己投影・反転 / 型3 権威・実証先出し の3本＋推奨）。
 
-## 構成
+## 注意
 
-```text
-mkt-lp-write/
-├── SKILL.md                              # 実行手順（ヒアリング→3型並列生成→監査）
-├── agents/openai.yaml                    # Codex互換マニフェスト
-└── references/
-    ├── hearing-guide.md                  # 3段階ヒアリングの質問文
-    ├── line-lp-structure.md              # セクション型・文字量・CTA設計・3型の構成
-    ├── japanese-expression-rules.md      # LP臭を消す表現ルール（巧い表現・禁止表現）
-    ├── audit-checklist.md                # 99点ルーブリック
-    └── templates/
-        ├── type-1-offer.md               # 型1 オファー先出し型
-        ├── type-2-mirror.md              # 型2 自己投影・反転型
-        └── type-3-proof.md               # 型3 権威・実証先出し型
-```
+- 文字起こしは、対象ページ・資料の権利に配慮して、調査・学習の範囲で使う
+- ログインが必要なページは取得できない
